@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team SAE BAJA - Marwadi University</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        racing: {
+                            red: '#FF0015',   /* Vibrant Ferrari Red */
+                            black: '#050505',
+                            card: '#121212',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Montserrat"', 'sans-serif'],
+                        display: ['"Orbitron"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        
+        /* 1. MOVING BACKGROUND SETUP */
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Behind everything */
+            background: #050505;
+        }
+
+        /* 2. THE "TABLE POP-UP" 3D EFFECT */
+        .reveal-3d {
+            opacity: 0;
+            /* Starts lying down (rotated) and pushed down */
+            transform: perspective(1000px) rotateX(45deg) translateY(100px) scale(0.8);
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy nice effect */
+        }
+        
+        .reveal-3d.active {
+            opacity: 1;
+            /* Stands up straight */
+            transform: perspective(1000px) rotateX(0deg) translateY(0) scale(1);
+        }
+
+        /* 3. HOVER GLOW EFFECTS */
+        .glow-card {
+            transition: all 0.3s ease;
+        }
+        .glow-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 0 25px rgba(255, 0, 21, 0.4); /* Red Glow */
+            border-color: #FF0015;
+        }
+
+        /* Nav Link Underline Effect */
+        .nav-link { position: relative; }
+        .nav-link::after {
+            content: ''; position: absolute; width: 0; height: 2px;
+            bottom: -5px; left: 0; background-color: #FF0015;
+            transition: width 0.3s;
+        }
+        .nav-link:hover::after { width: 100%; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #FF0015; border-radius: 4px;}
+    </style>
+</head>
+<body class="text-white font-sans overflow-x-hidden selection:bg-racing-red selection:text-white">
+
+    <canvas id="canvas-bg"></canvas>
+
+    <nav class="fixed w-full z-50 bg-black/60 backdrop-blur-md border-b border-white/10 transition-all duration-300 top-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <div class="w-10 h-10 bg-racing-red rounded-xl flex items-center justify-center animate-pulse">
+                        <i class="fas fa-cog text-white text-xl animate-spin-slow"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-display font-bold text-white text-xl tracking-widest uppercase">Team BAJA</span>
+                    </div>
+                </div>
+
+                <div class="hidden md:flex items-center space-x-8 text-sm font-bold tracking-widest uppercase">
+                    <a href="#home" class="nav-link text-gray-300 hover:text-white transition">Home</a>
+                    <a href="#about" class="nav-link text-gray-300 hover:text-white transition">About</a>
+                    <a href="#events" class="nav-link text-gray-300 hover:text-white transition">Events</a>
+                    <a href="#team" class="nav-link text-gray-300 hover:text-white transition">Team</a>
+                    <a href="#contact" class="nav-link text-gray-300 hover:text-white transition">Contact</a>
+                    <a href="#contact" class="bg-white/10 border border-white/20 px-6 py-2 rounded-2xl hover:bg-racing-red hover:border-racing-red transition duration-300 hover:scale-105">
+                        Join Us
+                    </a>
+                </div>
+
+                <button onclick="toggleMenu()" class="md:hidden text-2xl text-white"><i class="fas fa-bars"></i></button>
+            </div>
+        </div>
+        
+        <div id="mobile-menu" class="hidden md:hidden bg-black/95 absolute w-full border-b border-racing-red">
+            <div class="flex flex-col p-4 space-y-4 text-center font-display uppercase tracking-widest">
+                <a href="#home" onclick="toggleMenu()" class="py-2 hover:text-racing-red">Home</a>
+                <a href="#about" onclick="toggleMenu()" class="py-2 hover:text-racing-red">About</a>
+                <a href="#team" onclick="toggleMenu()" class="py-2 hover:text-racing-red">Team</a>
+                <a href="#contact" onclick="toggleMenu()" class="py-2 hover:text-racing-red">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="min-h-screen flex items-center justify-center relative px-4">
+        <div class="text-center z-10 max-w-5xl">
+            <div class="reveal-3d" style="transition-delay: 100ms">
+                <span class="text-racing-red font-display tracking-[0.5em] text-sm md:text-lg uppercase">Marwadi University</span>
+            </div>
+            
+            <h1 class="reveal-3d text-5xl md:text-7xl lg:text-9xl font-display font-black text-white mt-4 mb-8 uppercase leading-none shadow-2xl" style="transition-delay: 200ms">
+                Full <span class="text-transparent bg-clip-text bg-gradient-to-r from-racing-red to-orange-600">Throttle</span>
+            </h1>
+            
+            <p class="reveal-3d text-lg text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed" style="transition-delay: 300ms">
+                Designing, fabricating, and racing All-Terrain Vehicles. <br> 
+                Where engineering meets adrenaline.
+            </p>
+            
+            <div class="reveal-3d flex flex-col sm:flex-row justify-center gap-6" style="transition-delay: 400ms">
+                <a href="#about" class="bg-racing-red text-white px-10 py-4 rounded-2xl font-bold uppercase tracking-widest hover:bg-white hover:text-racing-red transition duration-300 shadow-[0_0_20px_rgba(255,0,0,0.5)] transform hover:scale-105">
+                    Explore The Car
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16 reveal-3d">
+                <h2 class="text-4xl md:text-6xl font-display font-bold uppercase mb-4">The Machine</h2>
+                <div class="h-1 w-24 bg-racing-red mx-auto rounded-full"></div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-racing-card border border-white/10 p-8 rounded-2xl reveal-3d glow-card">
+                    <div class="h-16 w-16 bg-racing-red/10 rounded-2xl flex items-center justify-center text-racing-red text-3xl mb-6">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3 class="text-2xl font-display font-bold mb-4">Transmission</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Custom tuned CVT with a reduction gearbox designed for maximum torque delivery on mud and steep inclines.
+                    </p>
+                </div>
+
+                <div class="bg-racing-card border border-white/10 p-8 rounded-2xl reveal-3d glow-card" style="transition-delay: 100ms">
+                    <div class="h-16 w-16 bg-racing-red/10 rounded-2xl flex items-center justify-center text-racing-red text-3xl mb-6">
+                        <i class="fas fa-car-crash"></i>
+                    </div>
+                    <h3 class="text-2xl font-display font-bold mb-4">Chassis</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        AISI 4130 Chromoly steel roll cage. Optimized using FEA analysis to ensure driver safety and structural rigidity.
+                    </p>
+                </div>
+
+                <div class="bg-racing-card border border-white/10 p-8 rounded-2xl reveal-3d glow-card" style="transition-delay: 200ms">
+                    <div class="h-16 w-16 bg-racing-red/10 rounded-2xl flex items-center justify-center text-racing-red text-3xl mb-6">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <h3 class="text-2xl font-display font-bold mb-4">Performance</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Top speed of 60kmph with the ability to tow 2 tons. Built for endurance, acceleration, and maneuverability.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="events" class="py-24">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-4xl md:text-6xl font-display font-bold uppercase mb-12 text-center reveal-3d">Recent Events</h2>
+            
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="relative group rounded-2xl overflow-hidden reveal-3d h-80">
+                    <img src="https://images.unsplash.com/photo-1514316454349-750a7fd3da3a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent flex flex-col justify-end p-8">
+                        <span class="text-racing-red font-bold uppercase tracking-wider mb-2">January 2026</span>
+                        <h3 class="text-3xl font-display font-bold">BAJA SAE India</h3>
+                        <p class="text-gray-300 mt-2 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-4 group-hover:translate-y-0">The main event. 4 hours of endurance racing.</p>
+                    </div>
+                </div>
+                 <div class="relative group rounded-2xl overflow-hidden reveal-3d h-80" style="transition-delay: 200ms">
+                    <img src="https://images.unsplash.com/photo-1552156317-56e6d5952439?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent flex flex-col justify-end p-8">
+                        <span class="text-racing-red font-bold uppercase tracking-wider mb-2">March 2026</span>
+                        <h3 class="text-3xl font-display font-bold">ATV Championship</h3>
+                        <p class="text-gray-300 mt-2 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-4 group-hover:translate-y-0">National level off-road championship.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="team" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16 reveal-3d">
+                <h2 class="text-4xl md:text-6xl font-display font-bold uppercase mb-4">The Squad</h2>
+            </div>
+
+            <div class="reveal-3d flex justify-center mb-16">
+                <div class="bg-gradient-to-r from-racing-card to-black border border-racing-red p-8 rounded-2xl flex flex-col md:flex-row items-center gap-8 max-w-4xl hover:shadow-[0_0_30px_rgba(229,9,20,0.3)] transition duration-500">
+                    <div class="w-48 h-48 rounded-2xl overflow-hidden border-4 border-racing-red shrink-0">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" class="w-full h-full object-cover">
+                    </div>
+                    <div class="text-center md:text-left">
+                        <span class="bg-racing-red text-white text-xs font-bold uppercase px-3 py-1 rounded-full">Captain</span>
+                        <h3 class="text-3xl font-display font-bold mt-2 uppercase">Friend's Name</h3>
+                        <p class="text-gray-400 mt-2 italic">"We don't just build cars. We build legacy."</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="bg-racing-card p-6 rounded-2xl text-center border border-white/5 hover:border-racing-red transition duration-300 group reveal-3d">
+                    <div class="w-24 h-24 bg-gray-800 rounded-full mx-auto mb-4 overflow-hidden group-hover:scale-110 transition">
+                         <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" class="w-full h-full object-cover">
+                    </div>
+                    <h4 class="font-display font-bold text-lg">Aditya</h4>
+                    <p class="text-xs text-racing-red uppercase tracking-wider">Brakes</p>
+                </div>
+                <div class="bg-racing-card p-6 rounded-2xl text-center border border-white/5 hover:border-racing-red transition duration-300 group reveal-3d" style="transition-delay: 100ms">
+                    <div class="w-24 h-24 bg-gray-800 rounded-full mx-auto mb-4 overflow-hidden group-hover:scale-110 transition">
+                         <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" class="w-full h-full object-cover">
+                    </div>
+                    <h4 class="font-display font-bold text-lg">Sneha</h4>
+                    <p class="text-xs text-racing-red uppercase tracking-wider">Steering</p>
+                </div>
+                 <div class="bg-racing-card p-6 rounded-2xl text-center border border-white/5 hover:border-racing-red transition duration-300 group reveal-3d" style="transition-delay: 200ms">
+                    <div class="w-24 h-24 bg-gray-800 rounded-full mx-auto mb-4 overflow-hidden group-hover:scale-110 transition">
+                         <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" class="w-full h-full object-cover">
+                    </div>
+                    <h4 class="font-display font-bold text-lg">Rahul</h4>
+                    <p class="text-xs text-racing-red uppercase tracking-wider">Suspension</p>
+                </div>
+                 <div class="bg-racing-card p-6 rounded-2xl text-center border border-white/5 hover:border-racing-red transition duration-300 group reveal-3d" style="transition-delay: 300ms">
+                    <div class="w-24 h-24 bg-gray-800 rounded-full mx-auto mb-4 overflow-hidden group-hover:scale-110 transition">
+                         <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" class="w-full h-full object-cover">
+                    </div>
+                    <h4 class="font-display font-bold text-lg">Vikram</h4>
+                    <p class="text-xs text-racing-red uppercase tracking-wider">Electricals</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-24 bg-racing-red/10 border-t border-racing-red/20">
+        <div class="max-w-3xl mx-auto px-4 text-center reveal-3d">
+            <h2 class="text-4xl font-display font-bold uppercase mb-8">Ready to Race?</h2>
+            <p class="text-gray-300 mb-8">Whether you want to sponsor us or join the team, we are always ready to connect.</p>
+            <form class="space-y-4 text-left bg-black/50 p-8 rounded-2xl border border-white/10">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <input type="text" placeholder="Name" class="bg-black border border-white/20 p-4 rounded-2xl text-white outline-none focus:border-racing-red transition">
+                    <input type="email" placeholder="Email" class="bg-black border border-white/20 p-4 rounded-2xl text-white outline-none focus:border-racing-red transition">
+                </div>
+                <textarea placeholder="Message" rows="4" class="w-full bg-black border border-white/20 p-4 rounded-2xl text-white outline-none focus:border-racing-red transition"></textarea>
+                <button class="w-full bg-racing-red text-white font-bold uppercase py-4 rounded-2xl hover:bg-red-700 transition">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <footer class="bg-black py-8 border-t border-white/10 text-center">
+        <p class="text-gray-500 text-sm">Designed by <span class="text-white font-bold">Avani Jaiswal</span> • Marwadi University</p>
+    </footer>
+
+    <script>
+        // 1. MOBILE MENU TOGGLE
+        function toggleMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // 2. THE 3D SCROLL EFFECT (Table Pop-up)
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px" // Trigger slightly before element is fully visible
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active'); // Add class that stands the card up
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal-3d').forEach((el) => {
+            observer.observe(el);
+        });
+
+        // 3. ANIMATED PARTICLE BACKGROUND (Warp Speed Effect)
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let particles = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.z = Math.random() * width; // Depth
+                this.size = Math.random() * 2;
+            }
+
+            update() {
+                this.z -= 10; // Speed of movement towards user
+                if (this.z <= 0) {
+                    this.reset();
+                    this.z = width;
+                }
+            }
+
+            draw() {
+                // Calculate perspective
+                const x = (this.x - width / 2) * (width / this.z) + width / 2;
+                const y = (this.y - height / 2) * (width / this.z) + height / 2;
+                const s = this.size * (width / this.z); // Size based on depth
+
+                ctx.beginPath();
+                ctx.fillStyle = "rgba(255, 255, 255, " + (1 - this.z / width) + ")"; // Fade out far particles
+                ctx.arc(x, y, s, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < 400; i++) { // Number of stars
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.fillStyle = "#050505"; // Clear screen
+            ctx.fillRect(0, 0, width, height);
+
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        initParticles();
+        animate();
+    </script>
+</body>
+</html>
